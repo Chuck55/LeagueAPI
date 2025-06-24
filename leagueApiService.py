@@ -32,7 +32,26 @@ def get_free_champions_in_rotation():
     new_player_champion_ids = response.json()["freeChampionIdsForNewPlayers"]
     champions_names_for_new_players = list(
         map(champion_id_list.get, new_player_champion_ids))
-    return {"free_champions": champions_names_for_all_players, "free_champions_for_new_players": champions_names_for_new_players}
+    return {
+        "free_champions": champions_names_for_all_players,
+        "free_champions_for_new_players": champions_names_for_new_players
+    }
+
+
+def get_champion_masteries(puuid: str):
+    url = f"https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{puuid}"
+    response = requests.get(url, headers=headers, timeout=10)
+    champion_list_map = get_champion_id_map(version="14.12.1")
+    high_mastery_champions = [champion for champion in response.json()
+                              if champion["championLevel"] > 10]
+    consise_list = list(map(lambda champion: {
+        "champion_Id": champion["championId"],
+        "champion_name": champion_list_map.get(champion["championId"]),
+        "champion_points": champion["championPoints"],
+        "champion_level": champion["championLevel"]
+    },
+        high_mastery_champions))
+    return consise_list
 
 
 def get_users_TFT_account(puuid: string):

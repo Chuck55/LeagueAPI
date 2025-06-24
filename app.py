@@ -1,7 +1,7 @@
 from quart import Quart, request
 from quart_schema import QuartSchema
 from leagueSchema import LeagueAccountSchema, LeagueAccountPUUID
-from leagueApiService import get_account_details_by_puuid, get_account_details_by_username, get_free_champions_in_rotation, get_users_TFT_account
+from leagueApiService import get_account_details_by_puuid, get_account_details_by_username, get_free_champions_in_rotation, get_users_TFT_account, get_champion_masteries
 app = Quart(__name__)
 QuartSchema(app)
 
@@ -16,7 +16,7 @@ async def get_league_user_details():
 
 
 @app.get("/get_league_user_account_details_by_puuid")
-async def get_champion_masteries():
+async def get_league_user_account_details_by_puuid():
     schema = LeagueAccountPUUID()
     result = schema.load(await request.get_json())
     content = get_account_details_by_puuid(result["puuid"])
@@ -34,6 +34,14 @@ async def get_users_tft_account():
     schema = LeagueAccountPUUID()
     result = schema.load(await request.get_json())
     content = get_users_TFT_account(result["puuid"])
+    return content, 200
+
+
+@app.get("/get_users_champions")
+async def get_users_champions():
+    schema = LeagueAccountPUUID()
+    result = schema.load(await request.get_json())
+    content = get_champion_masteries(result["puuid"])
     return content, 200
 
 
